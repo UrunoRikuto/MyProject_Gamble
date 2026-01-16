@@ -164,6 +164,31 @@ public:
 		return nullptr;
 	}
 
+	template<typename T = CGameObject>
+	std::list<T*> GetGameObjects()
+	{
+		std::list<T*> gameObjectList;
+		gameObjectList.clear();
+
+		// 自身を紐付けている全てのゲームオブジェクトを探索
+		for (auto list : m_pGameObject_List)
+		{
+			// T*型のゲームオブジェクトが見つかった場合はその値をリストに追加
+			for (auto obj : list)
+			{
+				// T*型にキャストを試みる
+				T* ret = dynamic_cast<T*>(obj);
+				// 見つかった場合はリストに追加
+				if (ret != nullptr)
+				{
+					gameObjectList.push_back(ret);
+				}
+			}
+		}
+		return gameObjectList;
+	}
+
+
 	// @brief シーン内の全てのオブジェクトIDを取得する
 	// @return オブジェクトIDのベクター
     std::vector<ObjectID> GetIDVec();

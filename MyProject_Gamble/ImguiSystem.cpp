@@ -93,6 +93,14 @@ void CImguiSystem::Update()
 {
 	// 更新処理を止めている場合カメラの更新を行う
 	if(!m_bUpdate)CCamera::GetInstance()->Update();
+
+	if (m_pGameObject)
+	{
+		if (m_pGameObject->IsDestroy())
+		{
+			m_pGameObject = nullptr;
+		}
+	}
 }
 
 /****************************************//*

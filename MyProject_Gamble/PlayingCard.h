@@ -50,8 +50,8 @@ public:
 	// @brief カードの数字取得
 	int GetNumber() { return m_tCardInfo.m_nNumber; }
 
-	// @brief カードの向きを逆転
-	void FlipCard();
+	// @brief カードの向きを表にする
+	void FaceUp();
 
 private:
 	bool m_bIsFaceUp = true; // カードが表向きかどうか

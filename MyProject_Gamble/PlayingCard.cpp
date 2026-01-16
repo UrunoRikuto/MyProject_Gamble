@@ -165,30 +165,18 @@ void CPlayingCard::Setting(Suit eSuit, int nNumber, bool bFaceUp)
 /*****************************************//*
 	@brief　	| カードの向きを反転
 *//*****************************************/
-void CPlayingCard::FlipCard()
+void CPlayingCard::FaceUp()
 {
-	m_bIsFaceUp = !m_bIsFaceUp;
+	m_bIsFaceUp = true;
 
 
 	CBillboardRenderer* pRenderer = GetComponent<CBillboardRenderer>();
-	if (m_bIsFaceUp)
-	{
-		pRenderer->SetKey("PlayingCards");
+	pRenderer->SetKey("PlayingCards");
 
-		// トランプカード1枚分のUVサイズを設定
-		m_tParam.m_f2UVSize = DirectX::XMFLOAT2(1.0f / 13.0f, 1.0f / 4.0f);
+	// トランプカード1枚分のUVサイズを設定
+	m_tParam.m_f2UVSize = DirectX::XMFLOAT2(1.0f / 13.0f, 1.0f / 4.0f);
 
-		// トランプのナンバーのUV座標を設定
-		m_tParam.m_f2UVPos = DirectX::XMFLOAT2(m_tParam.m_f2UVSize.x * (m_tCardInfo.m_nNumber - 1), m_tParam.m_f2UVSize.y * static_cast<int>(m_tCardInfo.m_eSuit));
-	}
-	else
-	{
-		pRenderer->SetKey("PlayingCardBack");
+	// トランプのナンバーのUV座標を設定
+	m_tParam.m_f2UVPos = DirectX::XMFLOAT2(m_tParam.m_f2UVSize.x * (m_tCardInfo.m_nNumber - 1), m_tParam.m_f2UVSize.y * static_cast<int>(m_tCardInfo.m_eSuit));
 
-		// UVサイズをカード全体に設定
-		m_tParam.m_f2UVSize = DirectX::XMFLOAT2(1.0f, 1.0f);
-
-		// UV座標を(0,0)に設定
-		m_tParam.m_f2UVPos = DirectX::XMFLOAT2(0.0f, 0.0f);
-	}
 }

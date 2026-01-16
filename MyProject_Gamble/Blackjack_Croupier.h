@@ -29,6 +29,20 @@ public:
 	// @brief ディーラーが持っているカードリストを取得する
 	std::vector<CPlayingCard*>& GetCroupierCards() { return m_Cards; }
 
+	// @brief ディーラーがブラックジャックかどうかの処理
+	void FirstCheckBlackjack();
+
+private:
+
+	// @brief 行動処理
+	void Action();
+
+	// @brief カードの位置調整
+	void AdjustCardPositions();
+
+	// @brief 持っているカードの合計値を計算する
+	int CalcHandValue();
+
 private:
 	// @brief ディーラーが持っているカードリスト
 	std::vector<CPlayingCard*> m_Cards;
