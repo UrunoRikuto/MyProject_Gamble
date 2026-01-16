@@ -2,6 +2,7 @@
 #include "Defines.h"
 #include "CameraDebug.h"
 #include "CameraGame.h"
+#include "CameraGame_Blackjack.h"
 
 // Ã“I•Ï”‚Ì‰Šú‰»
 CameraKind CCamera::m_eCameraKind = CameraKind::CAM_DEBUG;
@@ -137,6 +138,9 @@ CCamera* CCamera::GetInstance()
 			break;
 		case CameraKind::CAM_GAME:
 			m_pInstance[(int)m_eCameraKind] = new CCameraGame();
+			break;
+		case CameraKind::CAM_GAME_BLACKJACK:
+			m_pInstance[(int)m_eCameraKind] = new CCameraGame_Blackjack();
 			break;
 		}
 	}

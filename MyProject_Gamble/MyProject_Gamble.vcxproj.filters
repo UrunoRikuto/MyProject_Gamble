@@ -70,6 +70,21 @@
     <Filter Include="コードファイル\DesignPatternBase">
       <UniqueIdentifier>{9cee6c2d-77a2-4cf9-8819-fd195fdf1435}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ブラックジャック">
+      <UniqueIdentifier>{6522edf9-7a7c-4ce1-a413-097f077524df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ブラックジャック\PlayingCard">
+      <UniqueIdentifier>{ff975bd4-b514-4cb3-9c5a-1007ae8f17ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ブラックジャック\Scene">
+      <UniqueIdentifier>{ee0d9d2c-ecbf-4245-8096-5eadf83746f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ブラックジャック\Manager">
+      <UniqueIdentifier>{b2a14e7d-0cad-484d-8fcb-ea112ef133fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ブラックジャック\Player">
+      <UniqueIdentifier>{6dae0043-8099-4f77-b6d6-e8b14a4e1f61}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h">
@@ -195,6 +210,24 @@
     <ClInclude Include="Singleton.h">
       <Filter>コードファイル\DesignPatternBase</Filter>
     </ClInclude>
+    <ClInclude Include="PlayingCard.h">
+      <Filter>ブラックジャック\PlayingCard</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneGame_Blackjack.h">
+      <Filter>ブラックジャック\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Blackjack_GameManager.h">
+      <Filter>ブラックジャック\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Blackjack_Player.h">
+      <Filter>ブラックジャック\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="Blackjack_Croupier.h">
+      <Filter>ブラックジャック\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraGame_Blackjack.h">
+      <Filter>ブラックジャック</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -313,6 +346,24 @@
     </ClCompile>
     <ClCompile Include="ShaderManager.cpp">
       <Filter>コードファイル\Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayingCard.cpp">
+      <Filter>ブラックジャック\PlayingCard</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneGame_Blackjack.cpp">
+      <Filter>ブラックジャック\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Blackjack_GameManager.cpp">
+      <Filter>ブラックジャック\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Blackjack_Player.cpp">
+      <Filter>ブラックジャック\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Blackjack_Croupier.cpp">
+      <Filter>ブラックジャック\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="CameraGame_Blackjack.cpp">
+      <Filter>ブラックジャック</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

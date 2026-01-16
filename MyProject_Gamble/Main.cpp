@@ -64,7 +64,7 @@ HRESULT Init(HWND hWnd, UINT width, UINT height)
 	InitInput();
 
 	// 最初のシーンを設定
-	g_pScene = new CSceneGame();
+	g_pScene = new CSceneGame_Blackjack();
 	g_pScene->Init();
 
 	// トランジション初期化

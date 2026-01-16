@@ -203,3 +203,4 @@ private:
 
 // 派生クラスのインクルード
 #include "SceneGame.h"
+#include "SceneGame_Blackjack.h"

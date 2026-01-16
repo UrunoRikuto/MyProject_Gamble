@@ -14,6 +14,11 @@ void CObjectLoad::LoadAll()
 {
 	// フェード用テクスチャのロード
     CRendererComponent::Load(RendererKind::Texture, TEXTURE_PATH("Fade.png"), "Fade");
+
+	// トランプカードのテクスチャロード
+	CRendererComponent::Load(RendererKind::Texture, TEXTURE_PATH("PlayingCards.png"), "PlayingCards");
+	// トランプカードの裏面テクスチャロード
+	CRendererComponent::Load(RendererKind::Texture, TEXTURE_PATH("PlayingCard_Back.png"), "PlayingCardBack");
 }
 
 

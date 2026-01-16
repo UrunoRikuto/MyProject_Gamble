@@ -1,0 +1,49 @@
+/**************************************************//*
+	@file	| Blackjack_GameManager.h
+	@brief	| ブラックジャックゲームマネージャークラスのhファイル
+	@note	| ブラックジャックゲーム全体の管理を行うシングルトンクラス
+*//**************************************************/
+#pragma once
+#include "Singleton.h"
+#include <list>
+#include "PlayingCard.h"
+
+// @brief ブラックジャックゲームマネージャークラス
+class CBlackjack_GameManager : public ISingleton<CBlackjack_GameManager>
+{
+private:
+	// @brief コンストラクタ
+	CBlackjack_GameManager();
+
+	friend class ISingleton<CBlackjack_GameManager>;
+
+public:
+	// @brief デストラクタ
+	~CBlackjack_GameManager();
+
+	// @brief 初期化処理
+	void Init();
+
+	// @brief 終了処理
+	void Uninit();
+
+	// @brief 更新処理
+	void Update();
+
+	// @brief プレイ開始処理
+	void StartGame(int nPlayerNum);
+
+	// @brief カードを配る
+	// @return 配られたカード情報構造体
+	CPlayingCard::Info DealCard();
+
+private:
+	// @brief ゲームを進行中かどうか
+	bool m_bIsGameProgress = false;
+
+	// @brief プレイヤー人数
+	int m_nPlayerNum = 0;
+
+	// @brief トランプのカードリスト
+	std::list<CPlayingCard::Info> m_CardList;
+};

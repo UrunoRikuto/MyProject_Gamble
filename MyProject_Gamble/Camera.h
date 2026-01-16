@@ -7,6 +7,7 @@ enum class CameraKind
 {
 	CAM_DEBUG,	// デバッグ用カメラ
 	CAM_GAME,	// ゲーム用カメラ
+	CAM_GAME_BLACKJACK, // ブラックジャック用カメラ
 
 	MAX_CAMERA	// カメラの最大数
 };
