@@ -44,6 +44,9 @@ private:
 	// @brief 持っているカードの合計値を計算する
 	int CalcHandValue();
 
+	// @brief スプリット用のカードリストを入れ替える
+	void ChangeCards();
+
 private:
 	// @brief プレイヤーが持っているカードリスト
 	std::vector<CPlayingCard*> m_Cards;
@@ -53,5 +56,8 @@ private:
 
 	// @brief プレイヤーが行動可能かどうか
 	bool m_bCanAction = true;
+
+	// @brief スプリットの片方の手札が終了しているかどうか
+	bool m_bIsSplitHandFinished = false;
 };
 

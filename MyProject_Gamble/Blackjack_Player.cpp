@@ -52,6 +52,7 @@ void CBlackjack_Player::Init()
 
 	// 行動可能フラグを初期化
 	m_bCanAction = true;
+	m_bIsSplitHandFinished = false;
 }
 
 /*****************************************//*
@@ -90,31 +91,59 @@ void CBlackjack_Player::AddCard(CPlayingCard::Info tCardInfo)
 void CBlackjack_Player::Action()
 {
 	// 行動可能かどうか確認
-	if(!m_bCanAction)return;
+	if (!m_bCanAction)return;
 
 	// ヒット
-	if(IsKeyTrigger('Q'))
+	if (IsKeyTrigger('Q'))
 	{
 		// カードを1枚引く
 		AddCard(CBlackjack_GameManager::GetInstance()->DealCard());
 	}
 	// スタンド
-	else if(IsKeyTrigger('W'))
+	else if (IsKeyTrigger('W'))
 	{
 		// 手番終了
-		m_bCanAction = false;
+		if (m_SplitCards.empty())m_bCanAction = false;
+		else
+		{
+			if (!m_bIsSplitHandFinished)
+			{
+				// スプリットしている場合、手札を入れ替える
+				ChangeCards();
+				m_bIsSplitHandFinished = true;
+			}
+			else
+			{
+				// 手番終了
+				m_bCanAction = false;
+			}
+		}
 	}
-	// ダブルダウン
-	else if(IsKeyTrigger('E'))
+		// ダブルダウン
+	else if (IsKeyTrigger('E'))
 	{
 		// チップを倍にしてカードを1枚引く
 		AddCard(CBlackjack_GameManager::GetInstance()->DealCard());
 		// 手番終了
-		m_bCanAction = false;
+		if (m_SplitCards.empty())m_bCanAction = false;
+		else
+		{
+			if (!m_bIsSplitHandFinished)
+			{
+				// スプリットしている場合、手札を入れ替える
+				ChangeCards();
+				m_bIsSplitHandFinished = true;
+			}
+			else
+			{
+				// 手番終了
+				m_bCanAction = false;
+			}
+		}
 	}
 	// スプリット
 	// 同じ数字のカードが2枚あるか確認
-	else if(m_Cards.size() == 2 &&
+	else if (m_Cards.size() == 2 && m_SplitCards.empty() &&
 		m_Cards[0]->GetNumber() == m_Cards[1]->GetNumber())
 	{
 		if (IsKeyTrigger('R'))
@@ -124,15 +153,9 @@ void CBlackjack_Player::Action()
 			m_Cards.pop_back();
 			// それぞれの手札に1枚ずつカードを引く
 			AddCard(CBlackjack_GameManager::GetInstance()->DealCard());
-			m_SplitCards.push_back(GetScene()->AddGameObject<CPlayingCard>(Tag::GameObject, "PlayingCard"));
-			m_SplitCards.back()->Setting(
-				m_Cards[0]->GetSuit(),
-				m_Cards[0]->GetNumber()
-			);
-			m_SplitCards.back()->Setting(
-				CBlackjack_GameManager::GetInstance()->DealCard().m_eSuit,
-				CBlackjack_GameManager::GetInstance()->DealCard().m_nNumber
-			);
+			ChangeCards();
+			AddCard(CBlackjack_GameManager::GetInstance()->DealCard());
+			ChangeCards();
 		}
 
 	}
@@ -140,7 +163,21 @@ void CBlackjack_Player::Action()
 	// バーストしているか確認
 	if (CalcHandValue() >= 21)
 	{
-		m_bCanAction = false;
+		if (m_SplitCards.empty())m_bCanAction = false;
+		else
+		{
+			if (!m_bIsSplitHandFinished)
+			{
+				// スプリットしている場合、手札を入れ替える
+				ChangeCards();
+				m_bIsSplitHandFinished = true;
+			}
+			else
+			{
+				// 手番終了
+				m_bCanAction = false;
+			}
+		}
 	}
 }
 
@@ -177,9 +214,10 @@ void CBlackjack_Player::AdjustCardPositions()
 	{
 		// スプリットしている場合の位置調整処理
 		// 一組目の開始位置
-		DirectX::XMFLOAT3 startPos1 = DirectX::XMFLOAT3(-50.0f, -30.0f, 0.0f);
+		DirectX::XMFLOAT3 startPos1 = DirectX::XMFLOAT3(-30.0f, -40.0f, 0.0f);
+		if (m_bCanAction) startPos1.y += 10.0f; // 行動可能な手札は少し上に表示
 		// 二組目の開始位置
-		DirectX::XMFLOAT3 startPos2 = DirectX::XMFLOAT3(50.0f, -30.0f, 0.0f);
+		DirectX::XMFLOAT3 startPos2 = DirectX::XMFLOAT3(30.0f, -30.0f, 0.0f);
 		// カード間の間隔
 		DirectX::XMFLOAT3 offset = DirectX::XMFLOAT3(15.0f, 0.0f, 0.0f);
 		// 一組目のカード位置調整
@@ -249,4 +287,12 @@ int CBlackjack_Player::CalcHandValue()
 		aceCount--;
 	}
 	return totalValue;
+}
+
+/*****************************************//*
+	@brief　	| スプリット用のカードリストを入れ替える
+*//*****************************************/
+void CBlackjack_Player::ChangeCards()
+{
+	std::swap(m_Cards, m_SplitCards);
 }
