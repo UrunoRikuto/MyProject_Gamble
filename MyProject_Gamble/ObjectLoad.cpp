@@ -19,6 +19,8 @@ void CObjectLoad::LoadAll()
 	CRendererComponent::Load(RendererKind::Texture, TEXTURE_PATH("PlayingCards.png"), "PlayingCards");
 	// トランプカードの裏面テクスチャロード
 	CRendererComponent::Load(RendererKind::Texture, TEXTURE_PATH("PlayingCard_Back.png"), "PlayingCardBack");
+	// ブラックジャック背景用のテクスチャロード
+	CRendererComponent::Load(RendererKind::Texture, TEXTURE_PATH("BlackjackTable.png"), "BlackjackTable");
 }
 
 

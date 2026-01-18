@@ -11,6 +11,8 @@
 #include "Blackjack_GameManager.h"
 #include "Blackjack_Player.h"
 #include "Blackjack_Croupier.h"
+#include "BackGroundObject.h"
+#include "Sprite3DRenderer.h"
 
 /*****************************************//*
 	@brief　	| コンストラクタ
@@ -33,6 +35,10 @@ void CSceneGame_Blackjack::Init()
 {
 	// 基底クラスの初期化処理
 	CScene::Init();
+
+	// 背景オブジェクトの生成
+	CBackGroundObject*pBackGround = AddGameObject<CBackGroundObject>(Tag::GameObject, "BlackjackBackGround");
+	pBackGround->GetComponent<CSprite3DRenderer>()->SetKey("BlackjackTable");
 
 	// カメラの種類をブラックジャック用カメラに設定
 	CCamera::GetInstance()->SetCameraKind(CameraKind::CAM_GAME_BLACKJACK);

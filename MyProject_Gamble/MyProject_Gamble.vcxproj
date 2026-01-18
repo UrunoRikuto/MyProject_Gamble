@@ -132,6 +132,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BackGroundObject.h" />
     <ClInclude Include="BillboardRenderer.h" />
     <ClInclude Include="Blackjack_Croupier.h" />
     <ClInclude Include="Blackjack_GameManager.h" />
@@ -181,6 +182,7 @@
     <ClInclude Include="Transition.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BackGroundObject.cpp" />
     <ClCompile Include="BillboardRenderer.cpp" />
     <ClCompile Include="Blackjack_Croupier.cpp" />
     <ClCompile Include="Blackjack_GameManager.cpp" />
