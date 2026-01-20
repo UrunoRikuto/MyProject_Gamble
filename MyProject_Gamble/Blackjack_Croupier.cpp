@@ -152,13 +152,16 @@ void CBlackjack_Croupier::AdjustCardPositions()
 	@brief　	| 持っているカードの合計値を計算する
 	@return		| 合計値
 *//*****************************************/
-int CBlackjack_Croupier::CalcHandValue()
+int CBlackjack_Croupier::CalcHandValue(bool UpFaceOnly)
 {
 	int totalValue = 0;
 	int aceCount = 0;
 	// 各カードの値を計算
 	for (CPlayingCard* pCard : m_Cards)
 	{
+		// 表向きのカードのみ計算する場合、裏向きのカードはスキップ
+		if (UpFaceOnly && !pCard->IsFaceUp())continue;
+
 		int cardValue = pCard->GetNumber();
 		// 10以上のカードは10として扱う
 		if (cardValue > 10)

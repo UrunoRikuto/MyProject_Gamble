@@ -34,15 +34,22 @@ public:
 	// @brief プレイヤーが行動可能かどうかを設定する
 	void SetCanAction(bool bCanAction) { m_bCanAction = bCanAction; }
 
+	// @brief スプリット用のカードリストを取得する
+	std::vector<CPlayingCard*>& GetSplitCards() { return m_SplitCards; }
+
+	// @brief スプリットを行ったかどうかを取得する
+	// @return true:スプリットしている false:スプリットしていない
+	bool IsCurrentSplitHand() { return !m_SplitCards.empty(); }
+
+	// @brief 持っているカードの合計値を計算する
+	int CalcHandValue(std::vector<CPlayingCard*> cardlist);
+
 private:
 	// @brief 行動処理
 	void Action();
 
 	// @brief カードの位置調整
 	void AdjustCardPositions();
-
-	// @brief 持っているカードの合計値を計算する
-	int CalcHandValue();
 
 	// @brief スプリット用のカードリストを入れ替える
 	void ChangeCards();

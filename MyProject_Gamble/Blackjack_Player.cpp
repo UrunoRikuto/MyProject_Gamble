@@ -7,6 +7,7 @@
 #include "Main.h"
 #include "Input.h"
 #include "Blackjack_GameManager.h"
+#include "Oparation.h"
 
 /*****************************************//*
 	@brief　	| コンストラクタ
@@ -161,7 +162,7 @@ void CBlackjack_Player::Action()
 	}
 
 	// バーストしているか確認
-	if (CalcHandValue() >= 21)
+	if (CalcHandValue(m_Cards) >= 21)
 	{
 		if (m_SplitCards.empty())m_bCanAction = false;
 		else
@@ -214,24 +215,23 @@ void CBlackjack_Player::AdjustCardPositions()
 	{
 		// スプリットしている場合の位置調整処理
 		// 一組目の開始位置
-		DirectX::XMFLOAT3 startPos1 = DirectX::XMFLOAT3(-30.0f, -40.0f, 0.0f);
+		DirectX::XMFLOAT3 startPos1 = DirectX::XMFLOAT3(-50.0f, -30.0f, 0.0f);
 		if (m_bCanAction) startPos1.y += 10.0f; // 行動可能な手札は少し上に表示
 		// 二組目の開始位置
-		DirectX::XMFLOAT3 startPos2 = DirectX::XMFLOAT3(30.0f, -30.0f, 0.0f);
+		DirectX::XMFLOAT3 startPos2 = DirectX::XMFLOAT3(20.0f, -30.0f, 0.0f);
 		// カード間の間隔
 		DirectX::XMFLOAT3 offset = DirectX::XMFLOAT3(15.0f, 0.0f, 0.0f);
 		// 一組目のカード位置調整
 		for (size_t i = 0; i < m_Cards.size(); ++i)
 		{
+			// 三枚より多い場合は感覚を狭くする
+			DirectX::XMFLOAT3 adjustedOffset = offset * (m_Cards.size() > 3 ? 0.7f : 1.0f);
+
 			CPlayingCard* pCard = m_Cards[i];
 			if (pCard)
 			{
 				// 位置の計算
-				DirectX::XMFLOAT3 cardPos = DirectX::XMFLOAT3(
-					startPos1.x + offset.x * static_cast<float>(i),
-					startPos1.y + offset.y * static_cast<float>(i),
-					startPos1.z + offset.z * static_cast<float>(i)
-				);
+				DirectX::XMFLOAT3 cardPos = startPos1+ adjustedOffset * static_cast<float>(i);
 				// カードの位置を設定
 				pCard->SetPos(cardPos);
 			}
@@ -239,15 +239,14 @@ void CBlackjack_Player::AdjustCardPositions()
 		// 二組目のカード位置調整
 		for (size_t i = 0; i < m_SplitCards.size(); ++i)
 		{
+			// 三枚より多い場合は感覚を狭くする
+			DirectX::XMFLOAT3 adjustedOffset = offset * (m_SplitCards.size() > 3 ? 0.7f : 1.0f);
+
 			CPlayingCard* pCard = m_SplitCards[i];
 			if (pCard)
 			{
 				// 位置の計算
-				DirectX::XMFLOAT3 cardPos = DirectX::XMFLOAT3(
-					startPos2.x + offset.x * static_cast<float>(i),
-					startPos2.y + offset.y * static_cast<float>(i),
-					startPos2.z + offset.z * static_cast<float>(i)
-				);
+				DirectX::XMFLOAT3 cardPos =	startPos2 + adjustedOffset * static_cast<float>(i);
 				// カードの位置を設定
 				pCard->SetPos(cardPos);
 			}
@@ -259,12 +258,12 @@ void CBlackjack_Player::AdjustCardPositions()
 	@brief　	| 持っているカードの合計値を計算する
 	@return		| 合計値
 *//*****************************************/
-int CBlackjack_Player::CalcHandValue()
+int CBlackjack_Player::CalcHandValue(std::vector<CPlayingCard*> cardlist)
 {
 	int totalValue = 0;
 	int aceCount = 0;
 	// 各カードの値を計算
-	for (CPlayingCard* pCard : m_Cards)
+	for (CPlayingCard* pCard : cardlist)
 	{
 		int cardValue = pCard->GetNumber();
 		// 10以上のカードは10として扱う

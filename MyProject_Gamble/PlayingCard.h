@@ -52,6 +52,8 @@ public:
 
 	// @brief カードの向きを表にする
 	void FaceUp();
+	// @brief カードの向きが表かどうか取得
+	bool IsFaceUp() { return m_bIsFaceUp; }
 
 private:
 	bool m_bIsFaceUp = true; // カードが表向きかどうか

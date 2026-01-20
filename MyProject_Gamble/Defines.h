@@ -15,12 +15,12 @@ static const float fFPS = static_cast<float>(FPS);
 
 // @brief アセットファイルパス
 #define ASSET_PATH(path) ("Assets/" path)
-// @brief モデルファイルパス
-#define MODEL_PATH(path) (ASSET_PATH("Model/" path))
 // @brief テクスチャファイルパス
 #define TEXTURE_PATH(path) (ASSET_PATH("Texture/" path))
 // @brief シェーダーファイルパス
 #define SHADER_PATH(path) (ASSET_PATH("Shader/" path))
+// @brief フォントファイルパス
+#define FONTS_PATH(path) (ASSET_PATH("Fonts/" path))
 
 // 3D空間定義
 #define CMETER(value) (value * 0.01f)

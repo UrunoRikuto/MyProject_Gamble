@@ -195,6 +195,7 @@
     <ClCompile Include="CollisionObb.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="ImguiSystem.cpp" />
+    <ClCompile Include="ImguiSystem_Blackjack.cpp" />
     <ClCompile Include="PlayingCard.cpp" />
     <ClCompile Include="SceneGame_Blackjack.cpp" />
     <ClCompile Include="ShaderManager.cpp" />

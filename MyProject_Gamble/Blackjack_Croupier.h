@@ -32,6 +32,10 @@ public:
 	// @brief ディーラーがブラックジャックかどうかの処理
 	void FirstCheckBlackjack();
 
+	// @brief 持っているカードの合計値を計算する
+	// @brief UpFaceOnly：trueなら表向きのカードのみ計算、falseなら全てのカードを計算
+	int CalcHandValue(bool UpFaceOnly = false);
+
 private:
 
 	// @brief 行動処理
@@ -39,9 +43,6 @@ private:
 
 	// @brief カードの位置調整
 	void AdjustCardPositions();
-
-	// @brief 持っているカードの合計値を計算する
-	int CalcHandValue();
 
 private:
 	// @brief ディーラーが持っているカードリスト

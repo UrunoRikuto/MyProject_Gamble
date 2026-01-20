@@ -72,8 +72,12 @@ void CImguiSystem::Init()
 	ImGui::CreateContext();
 	ImGuiIO& io = ImGui::GetIO();
 
+	LoadFont(io, ce_fDebugFontSize);
+	LoadFont(io, ce_fInGameFontSize);
+
 	ImGui_ImplWin32_Init(GetMyWindow());
 	ImGui_ImplDX11_Init(GetDevice(), GetContext());
+
 }
 
 /****************************************//*
@@ -108,17 +112,20 @@ void CImguiSystem::Update()
 *//****************************************/
 void CImguiSystem::Draw()
 {
-	ImGuiIO& io = ImGui::GetIO();
-
 	ImGui_ImplDX11_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
 
-	DrawHierarchy();
-	DrawCameraParam();
-	DrawUpdateTick();
-	DrawCollision();
-	DrawFPS();
+	DrawGameUI_Blackjack();
+
+	if (IsDebugMode())
+	{
+		DrawHierarchy();
+		DrawCameraParam();
+		DrawUpdateTick();
+		DrawCollision();
+		DrawFPS();
+	}
 
 	// 選択しているゲームオブジェクトが存在する場合
 	// 選択しているオブジェクトのインスペクター表示処理
@@ -129,12 +136,31 @@ void CImguiSystem::Draw()
 }
 
 /****************************************//*
+	@brief　	| フォントロード関数
+*//****************************************/
+void CImguiSystem::LoadFont(ImGuiIO& io, float In_fFontSize)
+{	
+	// 日本語グリフ範囲を指定してフォント追加（NotoSansJP推奨）
+	const ImWchar* jpRanges = io.Fonts->GetGlyphRangesJapanese();
+	//文字サイズは据え置きでさらに太さを上げる設定
+	ImFontConfig cfg;
+	cfg.OversampleH = 3; // 水平方向のオーバーサンプリング
+	cfg.OversampleV = 3; // 垂直方向のオーバーサンプリング
+	cfg.PixelSnapH = true; // ピクセル境界にスナップ
+	cfg.RasterizerMultiply = 1.6f; //さらに濃くして太く見せる
+
+	ImFont* font = io.Fonts->AddFontFromFileTTF(FONTS_PATH("NotoSansJP-VariableFont_wght.ttf"), In_fFontSize, &cfg, jpRanges);
+	m_FontMap[In_fFontSize] = font;
+}
+
+/****************************************//*
 	@brief　	| 階層表示
 *//****************************************/
 void CImguiSystem::DrawHierarchy()
 {
 	ImGui::SetNextWindowPos(ImVec2(20, 20));
 	ImGui::SetNextWindowSize(ImVec2(280, 300));
+	ImGui::PushFont(GetFont(ce_fDebugFontSize));
 	ImGui::Begin("Hierarchy");
 	ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 260), ImGuiWindowFlags_NoTitleBar);
 
@@ -192,6 +218,7 @@ void CImguiSystem::DrawHierarchy()
 
 	ImGui::EndChild();
 	ImGui::End();
+	ImGui::PopFont();
 }
 
 /****************************************//*
@@ -209,6 +236,7 @@ void CImguiSystem::DrawCameraParam()
 	pCamera->SetCameraKind(CameraKind::CAM_DEBUG);
 	ImGui::SetNextWindowPos(ImVec2(20, SCREEN_HEIGHT - 400));
 	ImGui::SetNextWindowSize(ImVec2(280, 180));
+	ImGui::PushFont(GetFont(ce_fDebugFontSize));
 	ImGui::Begin("Camera");
 	ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(250, 160), ImGuiWindowFlags_NoTitleBar);
 
@@ -239,6 +267,7 @@ void CImguiSystem::DrawCameraParam()
 
 	ImGui::EndChild();
 	ImGui::End();
+	ImGui::PopFont();
 }
 
 /****************************************//*
@@ -248,6 +277,7 @@ void CImguiSystem::DrawUpdateTick()
 {
 	ImGui::SetNextWindowPos(ImVec2(20, SCREEN_HEIGHT - 120));
 	ImGui::SetNextWindowSize(ImVec2(280, 100));
+	ImGui::PushFont(GetFont(ce_fDebugFontSize));
 	ImGui::Begin("UpdateTick");
 
 	ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(ce_f2InspecterSize), ImGuiWindowFlags_NoTitleBar);
@@ -265,6 +295,7 @@ void CImguiSystem::DrawUpdateTick()
 	}
 
 	ImGui::End();
+	ImGui::PopFont();
 }
 
 /****************************************//*
@@ -274,12 +305,14 @@ void CImguiSystem::DrawCollision()
 {
 	ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH - 300, SCREEN_HEIGHT - 120));
 	ImGui::SetNextWindowSize(ImVec2(280, 100));
+	ImGui::PushFont(GetFont(ce_fDebugFontSize));
 	ImGui::Begin("Collision");
 
 	ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(ce_f2InspecterSize), ImGuiWindowFlags_NoTitleBar);
 	ImGui::Checkbox("DrawCollision", &m_bCollisionDraw);
 	ImGui::EndChild();
 	ImGui::End();
+	ImGui::PopFont();
 	if (!m_bCollisionDraw)return;
 
 	auto CollisionVec = GetScene()->GetCollisionVec();
@@ -296,6 +329,7 @@ void CImguiSystem::DrawFPS()
 {
 	ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2 + 170, 20.0f));
 	ImGui::SetNextWindowSize(ImVec2(140, 70));
+	ImGui::PushFont(GetFont(ce_fDebugFontSize));
 	ImGui::Begin("FPS");
 	ImGui::BeginChild(ImGui::GetID((void*)0), ImVec2(120.0f, 30.0f), ImGuiWindowFlags_NoTitleBar);
 
@@ -304,4 +338,5 @@ void CImguiSystem::DrawFPS()
 
 	ImGui::EndChild();
 	ImGui::End();
+	ImGui::PopFont();
 }

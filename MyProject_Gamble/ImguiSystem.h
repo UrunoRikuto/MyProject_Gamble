@@ -7,8 +7,15 @@
 #pragma once
 #include "GameObject.h"
 #include "imgui.h"
+#include <map>
 
 constexpr ImVec2 ce_f2InspecterSize = ImVec2(250, 30);
+// デバックフォントサイズ
+constexpr float ce_fDebugFontSize = 20.0f;
+// インゲームフォントサイズ
+constexpr float ce_fInGameFontSize = 70.0f;
+
+class CScene;
 
 // @brief Imguiシステムクラス
 class CImguiSystem
@@ -49,6 +56,12 @@ public:
 	// @return true:更新処理を行う false:更新処理を止める
 	bool IsUpdate() { return m_bUpdate; }
 private:
+	// @brief フォントロード関数
+	void LoadFont(ImGuiIO& io, float In_fFontSize);
+
+	// @brief フォント取得関数
+	ImFont* GetFont(float In_fFontSize) { return m_FontMap[In_fFontSize]; }
+private:
 	// @brief 階層表示
 	void DrawHierarchy();
 
@@ -64,6 +77,19 @@ private:
 	// @brief フレームレート表示
 	void DrawFPS();
 
+private:// ブラックジャック UI
+	// @brief ゲームUI表示
+	void DrawGameUI_Blackjack();
+	
+	// @brief ディーラーUI表示
+	void DrawDealerUI_Blackjack(CScene* In_pScene);
+
+	// @brief プレイヤーUI表示
+	void DrawPlayerUI_Blackjack(CScene* In_pScene);
+
+	// @brief 操作キー説明UI表示
+	void DrawControlUI_Blackjack();
+
 private:
 	// @brief インスタンス
 	static CImguiSystem* m_pInstance;
@@ -78,5 +104,8 @@ private:
 	// @brief 当たり判定の表示フラグ
 	// @note true:当たり判定を表示する false:当たり判定を表示しない
 	bool m_bCollisionDraw;
+
+	// @brief フォントマップ
+	std::map<float, ImFont*> m_FontMap;
 };
 

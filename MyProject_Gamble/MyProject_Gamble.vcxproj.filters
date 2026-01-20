@@ -91,6 +91,9 @@
     <Filter Include="ブラックジャック\Camera">
       <UniqueIdentifier>{07eed456-9186-46ac-9188-e1ebde90aac8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ブラックジャック\UI">
+      <UniqueIdentifier>{a717374c-7506-4c50-a24f-3fabe42d91a6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h">
@@ -376,6 +379,9 @@
     </ClCompile>
     <ClCompile Include="CameraGame_Blackjack.cpp">
       <Filter>ブラックジャック\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="ImguiSystem_Blackjack.cpp">
+      <Filter>ブラックジャック\UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
