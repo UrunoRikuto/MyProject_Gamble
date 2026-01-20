@@ -44,8 +44,7 @@ void CSceneGame_Blackjack::Init()
 	CCamera::GetInstance()->SetCameraKind(CameraKind::CAM_GAME_BLACKJACK);
 
 	// ブラックジャックのプレイヤーとディーラーの生成
-	std::list<CBlackjack_Player*> pPlayers;
-	pPlayers.push_back(AddGameObject<CBlackjack_Player>(Tag::GameObject, "BlackjackPlayer"));
+	CBlackjack_Player* pPlayer = AddGameObject<CBlackjack_Player>(Tag::GameObject, "BlackjackPlayer");
 	CBlackjack_Croupier* pCroupier = AddGameObject<CBlackjack_Croupier>(Tag::GameObject, "BlackjackCroupier");
 
 	// ブラックジャックゲームマネージャーの初期化
@@ -58,10 +57,8 @@ void CSceneGame_Blackjack::Init()
 	{
 		// プレイヤーにカードを配る
 		CPlayingCard::Info playerCardInfo = pGameManager->DealCard();
-		for(auto player : pPlayers)
-		{
-			player->AddCard(playerCardInfo);
-		}
+		pPlayer->AddCard(playerCardInfo);
+		
 		// ディーラーにカードを配る
 		CPlayingCard::Info croupierCardInfo = pGameManager->DealCard();
 		pCroupier->AddCard(croupierCardInfo, i < 1);
@@ -79,20 +76,20 @@ void CSceneGame_Blackjack::Update()
 	// 基底クラスの更新処理
 	CScene::Update();
 
+	// ブラックジャックゲームマネージャーの取得
+	CBlackjack_GameManager* pGameManager = CBlackjack_GameManager::GetInstance();
+
+
 	if (IsKeyTrigger(VK_DELETE))
 	{
 		// プレイヤーのカードをクリア
-		auto players = GetGameObjects<CBlackjack_Player>();
-		for (auto player : players)
-		{
-			player->Init();
-		}
-
+		CBlackjack_Player* player = GetGameObject<CBlackjack_Player>();
+		player->Init();
+		
 		// ディーラーのカードをクリア
 		CBlackjack_Croupier* croupier = GetGameObject<CBlackjack_Croupier>();
 		croupier->Init();
 
-		CBlackjack_GameManager* pGameManager = CBlackjack_GameManager::GetInstance();
 		pGameManager->Init();
 		pGameManager->StartGame(1);
 
@@ -101,15 +98,16 @@ void CSceneGame_Blackjack::Update()
 		{
 			// プレイヤーにカードを配る
 			CPlayingCard::Info playerCardInfo = pGameManager->DealCard();
-			for(auto player : players)
-			{
-				player->AddCard(playerCardInfo);
-			}
+			player->AddCard(playerCardInfo);
+			
 			// ディーラーにカードを配る
 			CPlayingCard::Info croupierCardInfo = pGameManager->DealCard();
 			croupier->AddCard(croupierCardInfo, i < 1);
 		}
 	}
+
+	// ブラックジャックゲームマネージャーの更新
+	pGameManager->Update();
 }
 
 /*****************************************//*

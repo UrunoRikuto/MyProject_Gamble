@@ -44,6 +44,9 @@ public:
 	// @brief 持っているカードの合計値を計算する
 	int CalcHandValue(std::vector<CPlayingCard*> cardlist);
 
+	// @brief 手札の合計値がバーストしているかどうかを取得する
+	bool IsBurst(std::vector<CPlayingCard*> cardlist);
+
 private:
 	// @brief 行動処理
 	void Action();

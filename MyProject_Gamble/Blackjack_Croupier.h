@@ -36,6 +36,9 @@ public:
 	// @brief UpFaceOnly：trueなら表向きのカードのみ計算、falseなら全てのカードを計算
 	int CalcHandValue(bool UpFaceOnly = false);
 
+	// @brief 手札の合計値がバーストしているかどうかを取得
+	bool IsBurst();
+
 private:
 
 	// @brief 行動処理
@@ -45,6 +48,7 @@ private:
 	void AdjustCardPositions();
 
 private:
+
 	// @brief ディーラーが持っているカードリスト
 	std::vector<CPlayingCard*> m_Cards;
 };

@@ -78,7 +78,26 @@ void CBlackjack_Player::Update()
 void CBlackjack_Player::AddCard(CPlayingCard::Info tCardInfo)
 {
 	// トランプカードオブジェクトの生成
-	CPlayingCard* pCard = GetScene()->AddGameObject<CPlayingCard>(Tag::GameObject,"PlayingCard");
+	// カード名
+	std::string cardName = "";
+	switch (tCardInfo.m_eSuit)
+	{
+	case CPlayingCard::Suit::Spade:
+		cardName += "Spade_";
+		break;
+	case CPlayingCard::Suit::Club:
+		cardName += "Club_";
+		break;
+	case CPlayingCard::Suit::Heart:
+		cardName += "Heart_";
+		break;
+	case CPlayingCard::Suit::Diamond:
+		cardName += "Diamond_";
+		break;
+	}
+	cardName += std::to_string(tCardInfo.m_nNumber);
+	// カードオブジェクトの追加
+	CPlayingCard* pCard = GetScene()->AddGameObject<CPlayingCard>(Tag::GameObject, cardName);
 	// カード情報の設定
 	pCard->Setting(tCardInfo.m_eSuit, tCardInfo.m_nNumber);
 
@@ -286,6 +305,15 @@ int CBlackjack_Player::CalcHandValue(std::vector<CPlayingCard*> cardlist)
 		aceCount--;
 	}
 	return totalValue;
+}
+
+/*****************************************//*
+	@brief　	| 手札の合計値がバーストしているかどうかを取得
+	@return		| true:バーストしている false:バーストしていない
+*//*****************************************/
+bool CBlackjack_Player::IsBurst(std::vector<CPlayingCard*> cardlist)
+{
+	return CalcHandValue(cardlist) > 21;
 }
 
 /*****************************************//*

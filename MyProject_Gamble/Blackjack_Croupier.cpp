@@ -64,7 +64,26 @@ void CBlackjack_Croupier::Update()
 void CBlackjack_Croupier::AddCard(CPlayingCard::Info tCardInfo, bool bFaceUp)
 {
 	// トランプカードオブジェクトの生成
-	CPlayingCard* pCard = GetScene()->AddGameObject<CPlayingCard>(Tag::GameObject, "PlayingCard");
+	// カード名
+	std::string cardName = "";
+	switch (tCardInfo.m_eSuit)
+	{
+	case CPlayingCard::Suit::Spade:
+		cardName += "Spade_";
+		break;
+	case CPlayingCard::Suit::Club:
+		cardName += "Club_";
+		break;
+	case CPlayingCard::Suit::Heart:
+		cardName += "Heart_";
+		break;
+	case CPlayingCard::Suit::Diamond:
+		cardName += "Diamond_";
+		break;
+	}
+	cardName += std::to_string(tCardInfo.m_nNumber);
+	// カードオブジェクトをシーンに追加
+	CPlayingCard* pCard = GetScene()->AddGameObject<CPlayingCard>(Tag::GameObject, "cardName");
 	pCard->Setting(tCardInfo.m_eSuit, tCardInfo.m_nNumber, bFaceUp);
 	// カードリストに追加
 	m_Cards.push_back(pCard);
@@ -82,12 +101,9 @@ void CBlackjack_Croupier::FirstCheckBlackjack()
 	if (handValue == 21)
 	{
 		// すべてのプレイヤーを取得
-		auto players = GetScene()->GetGameObjects<CBlackjack_Player>();
-		for (auto player : players)
-		{
-			// 行動不可に設定
-			player->SetCanAction(false);
-		}
+		CBlackjack_Player* player = GetScene()->GetGameObject<CBlackjack_Player>();
+		// 行動不可に設定
+		player->SetCanAction(false);
 
 		m_Cards[1]->FaceUp(); // 2枚目のカードを表向きにする
 	}
@@ -98,16 +114,13 @@ void CBlackjack_Croupier::FirstCheckBlackjack()
 *//*****************************************/
 void CBlackjack_Croupier::Action()
 {
-	auto players = GetScene()->GetGameObjects<CBlackjack_Player>();
-	// 全てのプレイヤーが行動終了しているか確認
-	for (auto player : players)
+	// プレイヤーが行動終了しているか確認
+	if (!CBlackjack_GameManager::GetInstance()->IsPlayerActionEnd())
 	{
-		if (player->CanAction())
-		{
-			// 行動可能なプレイヤーがいる場合、処理を終了
-			return;
-		}
+		// 行動可能なプレイヤーがいる場合、処理を終了
+		return;
 	}
+
 
 	m_Cards[1]->FaceUp(); // 2枚目のカードを表向きにする
 
@@ -183,4 +196,13 @@ int CBlackjack_Croupier::CalcHandValue(bool UpFaceOnly)
 		aceCount--;
 	}
 	return totalValue;
+}
+
+/*****************************************//*
+	@brief　	| 手札の合計値がバーストしているかどうかを取得
+	@return		| true:バースト false:バーストしていない
+*//*****************************************/
+bool CBlackjack_Croupier::IsBurst()
+{
+	return CalcHandValue() > 21;
 }

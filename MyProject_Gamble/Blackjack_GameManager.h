@@ -37,6 +37,9 @@ public:
 	// @return 配られたカード情報構造体
 	CPlayingCard::Info DealCard();
 
+	// @brief プレイヤーの行動が終了したかどうかを取得
+	bool IsPlayerActionEnd() { return m_bIsPlayerActionEnd; }
+
 private:
 	// @brief ゲームを進行中かどうか
 	bool m_bIsGameProgress = false;
@@ -46,4 +49,10 @@ private:
 
 	// @brief トランプのカードリスト
 	std::list<CPlayingCard::Info> m_CardList;
+
+	// @brief リザルトオブジェクト
+	std::list<CGameObject*> m_ResultObjectList;
+
+	// @brief プレイヤーの行動終了フラグ
+	bool m_bIsPlayerActionEnd = false;
 };

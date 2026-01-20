@@ -4,8 +4,12 @@
 	@note	| ブラックジャックゲーム全体の管理を行うシングルトンクラス
 *//**************************************************/
 #include "Blackjack_GameManager.h"
+#include "Main.h"
+#include "Blackjack_Croupier.h"
+#include "Blackjack_Player.h"
 #include <algorithm>
 #include <random>
+#include "BillboardRenderer.h"
 
 /*****************************************//*
 	@brief　	| コンストラクタ
@@ -29,6 +33,15 @@ CBlackjack_GameManager::~CBlackjack_GameManager()
 *//*****************************************/
 void CBlackjack_GameManager::Init()
 {
+	for(auto resultObject : m_ResultObjectList)
+	{
+		if (resultObject)
+		{
+			resultObject->Destroy();
+		}
+	}
+	m_ResultObjectList.clear();
+
 	// トランプの初期化
 	m_CardList.clear();
 	for (int suit = 0; suit < 4; ++suit)
@@ -62,6 +75,56 @@ void CBlackjack_GameManager::Uninit()
 *//*****************************************/
 void CBlackjack_GameManager::Update()
 {
+	// 現在シーンの取得
+	CScene* pScene = GetScene();
+	// ディーラーの取得
+	CBlackjack_Croupier* pCroupier = pScene->GetGameObject<CBlackjack_Croupier>();
+	// プレイヤーの取得
+	CBlackjack_Player* pPlayer = pScene->GetGameObject<CBlackjack_Player>();
+
+	// プレイヤーの行動終了判定
+	m_bIsPlayerActionEnd = !pPlayer->CanAction();
+
+	// 勝敗判定
+	if (m_ResultObjectList.empty() && m_bIsPlayerActionEnd)
+	{
+		if (pPlayer->IsCurrentSplitHand())
+		{
+
+		}
+		else
+		{
+			CGameObject* pResultObject = pScene->AddGameObject<CGameObject>(Tag::GameObject, "ResultObject");
+			pResultObject->SetPos({ -15.0f, -10.0f, 5.0f });
+			pResultObject->SetSize({ 10.0f, 8.0f, 1.0f });
+
+			// プレイヤーがバーストしている場合
+			if (pPlayer->IsBurst(pPlayer->GetPlayerCards()))
+			{
+				// ディーラーの勝ち処理
+				pResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
+			}
+			// プレイヤーがディーラーよりも手札の合計値が高い場合
+			else if (pCroupier->CalcHandValue() < pPlayer->CalcHandValue(pPlayer->GetPlayerCards()) || pCroupier->IsBurst())
+			{
+				// プレイヤーの勝ち
+				pResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
+			}
+			// ディーラーがプレイヤーよりも手札の合計値が高い場合
+			else if (pCroupier->CalcHandValue() > pPlayer->CalcHandValue(pPlayer->GetPlayerCards()))
+			{
+				// ディーラーの勝ち処理
+				pResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
+			}
+			// 引き分けの場合
+			else
+			{
+				// 引き分け処理
+				pResultObject->AddComponent<CBillboardRenderer>()->SetKey("Draw");
+			}
+			m_ResultObjectList.push_back(pResultObject);
+		}
+	}
 }
 
 /*****************************************//*
