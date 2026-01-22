@@ -36,8 +36,20 @@ public:
 	// @brief UpFaceOnly：trueなら表向きのカードのみ計算、falseなら全てのカードを計算
 	int CalcHandValue(bool UpFaceOnly = false);
 
+	// @brief 行動中かどうかを取得
+	bool IsActioning() { return m_bCanAction; }
+
 	// @brief 手札の合計値がバーストしているかどうかを取得
-	bool IsBurst();
+	bool IsBurst()
+	{
+		return CalcHandValue() > 21;
+	}
+
+	// @brief 手札の合計値がブラックジャック(21)かどうかを取得
+	bool IsBlackjack()
+	{
+		return CalcHandValue() == 21;
+	}
 
 private:
 
@@ -51,5 +63,8 @@ private:
 
 	// @brief ディーラーが持っているカードリスト
 	std::vector<CPlayingCard*> m_Cards;
+
+	// @brief プレイヤーが行動可能かどうか
+	bool m_bCanAction = true;
 };
 

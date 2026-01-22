@@ -68,7 +68,7 @@ void CImguiSystem::DrawPlayerUI_Blackjack(CScene* In_pScene)
 	{
 		// メインカードの合計値
 		// ウィンドウの設定
-		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2.0f + 200, SCREEN_HEIGHT - 350));
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2.0f + 220, SCREEN_HEIGHT - 350));
 		ImGui::SetNextWindowSize(ImVec2(280, 180));
 		// フォントの設定
 		ImGui::PushFont(GetFont(ce_fInGameFontSize));
@@ -83,7 +83,7 @@ void CImguiSystem::DrawPlayerUI_Blackjack(CScene* In_pScene)
 
 		// スプリットカードの合計値
 		// ウィンドウの設定
-		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2.0f - 200, SCREEN_HEIGHT - 350));
+		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2.0f - 220, SCREEN_HEIGHT - 350));
 		ImGui::SetNextWindowSize(ImVec2(280, 180));
 		// フォントの設定
 		ImGui::PushFont(GetFont(ce_fInGameFontSize));

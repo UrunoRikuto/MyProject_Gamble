@@ -13,6 +13,7 @@
 *//*****************************************/
 CBlackjack_Croupier::CBlackjack_Croupier()
 	: m_Cards()
+	, m_bCanAction(true)
 {
 }
 
@@ -40,6 +41,9 @@ void CBlackjack_Croupier::Init()
 		}
 	}
 	m_Cards.clear();
+
+	// 行動可能に設定
+	m_bCanAction = true;
 }
 
 /*****************************************//*
@@ -121,6 +125,7 @@ void CBlackjack_Croupier::Action()
 		return;
 	}
 
+	m_bCanAction = false; // 行動中フラグをfalseにする
 
 	m_Cards[1]->FaceUp(); // 2枚目のカードを表向きにする
 
@@ -196,13 +201,4 @@ int CBlackjack_Croupier::CalcHandValue(bool UpFaceOnly)
 		aceCount--;
 	}
 	return totalValue;
-}
-
-/*****************************************//*
-	@brief　	| 手札の合計値がバーストしているかどうかを取得
-	@return		| true:バースト false:バーストしていない
-*//*****************************************/
-bool CBlackjack_Croupier::IsBurst()
-{
-	return CalcHandValue() > 21;
 }

@@ -8,6 +8,9 @@
 #include <list>
 #include "PlayingCard.h"
 
+class CBlackjack_Croupier;
+class CBlackjack_Player;
+
 // @brief ブラックジャックゲームマネージャークラス
 class CBlackjack_GameManager : public ISingleton<CBlackjack_GameManager>
 {
@@ -39,6 +42,11 @@ public:
 
 	// @brief プレイヤーの行動が終了したかどうかを取得
 	bool IsPlayerActionEnd() { return m_bIsPlayerActionEnd; }
+
+private:
+
+	// @brief リザルトチェック処理
+	void ResultCheck();
 
 private:
 	// @brief ゲームを進行中かどうか

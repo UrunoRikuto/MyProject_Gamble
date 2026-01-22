@@ -210,8 +210,6 @@ void CBlackjack_Player::AdjustCardPositions()
 	// スプリットしていない場合
 	if (m_SplitCards.empty())
 	{
-		// 開始位置
-		DirectX::XMFLOAT3 startPos = DirectX::XMFLOAT3(-15.0f, -30.0f, 0.0f);
 		// カード間の間隔
 		DirectX::XMFLOAT3 offset = DirectX::XMFLOAT3(15.0f, 0.0f, 0.0f);
 		for (size_t i = 0; i < m_Cards.size(); ++i)
@@ -221,9 +219,9 @@ void CBlackjack_Player::AdjustCardPositions()
 			{
 				// 位置の計算
 				DirectX::XMFLOAT3 cardPos = DirectX::XMFLOAT3(
-					startPos.x + offset.x * static_cast<float>(i),
-					startPos.y + offset.y * static_cast<float>(i),
-					startPos.z + offset.z * static_cast<float>(i)
+					ce_f3PlayerCardStartPos.x + offset.x * static_cast<float>(i),
+					ce_f3PlayerCardStartPos.y + offset.y * static_cast<float>(i),
+					ce_f3PlayerCardStartPos.z + offset.z * static_cast<float>(i)
 				);
 				// カードの位置を設定
 				pCard->SetPos(cardPos);
@@ -233,11 +231,6 @@ void CBlackjack_Player::AdjustCardPositions()
 	else
 	{
 		// スプリットしている場合の位置調整処理
-		// 一組目の開始位置
-		DirectX::XMFLOAT3 startPos1 = DirectX::XMFLOAT3(-50.0f, -30.0f, 0.0f);
-		if (m_bCanAction) startPos1.y += 10.0f; // 行動可能な手札は少し上に表示
-		// 二組目の開始位置
-		DirectX::XMFLOAT3 startPos2 = DirectX::XMFLOAT3(20.0f, -30.0f, 0.0f);
 		// カード間の間隔
 		DirectX::XMFLOAT3 offset = DirectX::XMFLOAT3(15.0f, 0.0f, 0.0f);
 		// 一組目のカード位置調整
@@ -250,7 +243,7 @@ void CBlackjack_Player::AdjustCardPositions()
 			if (pCard)
 			{
 				// 位置の計算
-				DirectX::XMFLOAT3 cardPos = startPos1+ adjustedOffset * static_cast<float>(i);
+				DirectX::XMFLOAT3 cardPos = ce_f3PlayerSpritCardStartPosRight + adjustedOffset * static_cast<float>(i);
 				// カードの位置を設定
 				pCard->SetPos(cardPos);
 			}
@@ -265,7 +258,7 @@ void CBlackjack_Player::AdjustCardPositions()
 			if (pCard)
 			{
 				// 位置の計算
-				DirectX::XMFLOAT3 cardPos =	startPos2 + adjustedOffset * static_cast<float>(i);
+				DirectX::XMFLOAT3 cardPos = ce_f3PlayerSpritCardStartPosLeft + adjustedOffset * static_cast<float>(i);
 				// カードの位置を設定
 				pCard->SetPos(cardPos);
 			}
@@ -305,15 +298,6 @@ int CBlackjack_Player::CalcHandValue(std::vector<CPlayingCard*> cardlist)
 		aceCount--;
 	}
 	return totalValue;
-}
-
-/*****************************************//*
-	@brief　	| 手札の合計値がバーストしているかどうかを取得
-	@return		| true:バーストしている false:バーストしていない
-*//*****************************************/
-bool CBlackjack_Player::IsBurst(std::vector<CPlayingCard*> cardlist)
-{
-	return CalcHandValue(cardlist) > 21;
 }
 
 /*****************************************//*

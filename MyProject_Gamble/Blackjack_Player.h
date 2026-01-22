@@ -7,6 +7,11 @@
 #include "GameObject.h"
 #include "PlayingCard.h"
 
+constexpr DirectX::XMFLOAT3 ce_f3PlayerCardStartPos = DirectX::XMFLOAT3(-15.0f, -30.0f, 0.0f); // プレイヤーのカード開始位置
+
+constexpr DirectX::XMFLOAT3 ce_f3PlayerSpritCardStartPosLeft = DirectX::XMFLOAT3(20.0f, -30.0f, 0.0f); // プレイヤーのスプリットカード開始位置（左）
+constexpr DirectX::XMFLOAT3 ce_f3PlayerSpritCardStartPosRight = DirectX::XMFLOAT3(-50.0f, -30.0f, 0.0f); // プレイヤーのスプリットカード開始位置（右）
+
 // @brief ブラックジャックプレイヤークラス
 class CBlackjack_Player : public CGameObject
 {
@@ -45,7 +50,16 @@ public:
 	int CalcHandValue(std::vector<CPlayingCard*> cardlist);
 
 	// @brief 手札の合計値がバーストしているかどうかを取得する
-	bool IsBurst(std::vector<CPlayingCard*> cardlist);
+	bool IsBurst(std::vector<CPlayingCard*> cardlist)
+	{
+		return CalcHandValue(cardlist) > 21;
+	}
+
+	// @brief 手札の合計値がブラックジャック(21)かどうかを取得する
+	bool IsBlackjack(std::vector<CPlayingCard*> cardlist)
+	{
+		return CalcHandValue(cardlist) == 21;
+	}
 
 private:
 	// @brief 行動処理

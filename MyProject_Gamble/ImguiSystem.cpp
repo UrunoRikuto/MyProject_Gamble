@@ -233,7 +233,7 @@ void CImguiSystem::DrawCameraParam()
 
 	if (!pCamera) return;
 	if (m_bUpdate) return;
-	pCamera->SetCameraKind(CameraKind::CAM_DEBUG);
+	//pCamera->SetCameraKind(CameraKind::CAM_DEBUG);
 	ImGui::SetNextWindowPos(ImVec2(20, SCREEN_HEIGHT - 400));
 	ImGui::SetNextWindowSize(ImVec2(280, 180));
 	ImGui::PushFont(GetFont(ce_fDebugFontSize));
