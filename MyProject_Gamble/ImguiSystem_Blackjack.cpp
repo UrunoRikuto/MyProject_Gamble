@@ -124,4 +124,16 @@ void CImguiSystem::DrawPlayerUI_Blackjack(CScene* In_pScene)
 *//****************************************/
 void CImguiSystem::DrawControlUI_Blackjack()
 {
+	ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2.0f + 220, SCREEN_HEIGHT - 350));
+	ImGui::SetNextWindowSize(ImVec2(400, 500));
+
+	ImGui::PushFont(GetFont(ce_fInGameFontSize));
+	ImGui::Begin("Control UI", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
+	ImGui::Text("[ Q ]Hit");
+	ImGui::Text("[ W ]Stand");
+	ImGui::Text("[ E ]Double Down");
+	ImGui::Text("[ R ]Split");
+
+	ImGui::End();
+	ImGui::PopFont();
 }
