@@ -59,6 +59,9 @@ public:
 	// ディーラー情報の取得（ネットワーク受信値）
 	const DealerData& GetDealerData() const { return dealer; }
 
+	// 他プレイヤー情報の取得（ネットワーク受信値）
+	const std::map<int, OtherPlayerData>& GetOtherPlayers() const { return otherPlayers; }
+
 	// ヒット要求（サーバー権威で1枚配ってもらう）
 	void RequestHit();
 

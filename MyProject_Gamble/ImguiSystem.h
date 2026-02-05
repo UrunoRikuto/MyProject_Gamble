@@ -55,6 +55,10 @@ public:
 	// @brief 更新処理を管理するフラグの取得
 	// @return true:更新処理を行う false:更新処理を止める
 	bool IsUpdate() { return m_bUpdate; }
+public:
+	// ブラックジャックUI等で使用するフォント取得（描画用）
+	ImFont* GetFontForUI(float In_fFontSize) { return m_FontMap[In_fFontSize]; }
+
 private:
 	// @brief フォントロード関数
 	void LoadFont(ImGuiIO& io, float In_fFontSize);
@@ -86,6 +90,9 @@ private:// ブラックジャック UI
 
 	// @brief プレイヤーUI表示
 	void DrawPlayerUI_Blackjack(CScene* In_pScene);
+
+	// @brief 他プレイヤーUI表示（左側に合計値を表示）
+	void DrawOtherPlayersUI_Blackjack();
 
 	// @brief 操作キー説明UI表示
 	void DrawControlUI_Blackjack();
