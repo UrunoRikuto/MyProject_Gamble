@@ -133,10 +133,10 @@ int CPlayingCard::Inspecter(bool isEnd)
 *//*****************************************/
 void CPlayingCard::Setting(Suit eSuit, int nNumber, bool bFaceUp)
 {
-	// スートとナンバーを保存
-	m_tCardInfo = { eSuit, nNumber };
+	// スートとナンバーを保存（FaceUpも保持）
+	m_tCardInfo = { eSuit, nNumber, bFaceUp };
 
-	// 表向きかどうかを保存
+	// 表示するかどうかを保存
 	m_bIsFaceUp = bFaceUp;
 
 	CBillboardRenderer* pRenderer = GetComponent<CBillboardRenderer>();

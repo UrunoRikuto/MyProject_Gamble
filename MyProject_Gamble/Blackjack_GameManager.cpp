@@ -7,6 +7,7 @@
 #include "Main.h"
 #include "Blackjack_Croupier.h"
 #include "Blackjack_Player.h"
+#include "Blackjack_Network.h"
 #include <algorithm>
 #include <random>
 #include "BillboardRenderer.h"
@@ -119,159 +120,62 @@ void CBlackjack_GameManager::ResultCheck()
 
 	// プレイヤーの行動終了判定
 	m_bIsPlayerActionEnd = !pPlayer->CanAction();
-	// ディーラーが行動中かどうかを取得
-	bool bIsCroupierAction = pCroupier->IsActioning();
 
-	// ゲーム中に一回だけ勝敗判定を行う
-	// まだ勝敗判定オブジェクトが生成されておらず、プレイヤーの行動が終了していて、ディーラーの行動が終了している場合
-	if (!(m_ResultObjectList.empty() && m_bIsPlayerActionEnd && !bIsCroupierAction))return;
-
-	// スプリットしている場合の勝敗判定
-	if (pPlayer->IsCurrentSplitHand())
+	// --- 結果表示タイミング ---
+	// ネットワーク同期の場合: サーバー側の DealerFinished を待つ
+	bool canShowResult = false;
+	if (g_pNetwork)
 	{
-		// プレイヤーの手札の取得
-		auto playerCards = pPlayer->GetPlayerCards();
-		auto splitCards = pPlayer->GetSplitCards();
-
-		// 右側の手札の結果表示用オブジェクトの生成
-		CGameObject* pPlayerRightResultObject = pScene->AddGameObject<CGameObject>(Tag::GameObject, "PlayerLeftResultObject");
-		pPlayerRightResultObject->SetPos({ -50.0f, -10.0f, 5.0f });
-		pPlayerRightResultObject->SetSize({ 10.0f, 8.0f, 1.0f });
-
-		// 右側の手札の勝敗判定
-		if (pPlayer->IsBurst(playerCards))
-		{
-			// プレイヤーの右側の手札の負け
-			pPlayerRightResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
-		}
-		else if (pCroupier->IsBurst())
-		{
-			// プレイヤーの右側の手札の勝ち
-			pPlayerRightResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
-		}
-		else if (pPlayer->IsBlackjack(playerCards) && !pCroupier->IsBlackjack())
-		{
-			// プレイヤーの右側の手札の勝ち
-			pPlayerRightResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
-		}
-		else if (!pPlayer->IsBlackjack(playerCards) && pCroupier->IsBlackjack())
-		{
-			// プレイヤーの右側の手札の負け
-			pPlayerRightResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
-		}
-		else if (pCroupier->CalcHandValue() > pPlayer->CalcHandValue(playerCards))
-		{
-			// プレイヤーの右側の手札の負け
-			pPlayerRightResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
-		}
-		else if (pCroupier->CalcHandValue() < pPlayer->CalcHandValue(playerCards))
-		{
-			// プレイヤーの右側の手札の勝ち
-			pPlayerRightResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
-		}
-		else
-		{
-			// 引き分け
-			pPlayerRightResultObject->AddComponent<CBillboardRenderer>()->SetKey("Draw");
-		}
-		m_ResultObjectList.push_back(pPlayerRightResultObject);
-
-		// 左側の手札の結果表示用オブジェクトの生成
-		CGameObject* pPlayerLeftResultObject = pScene->AddGameObject<CGameObject>(Tag::GameObject, "PlayerRightResultObject");
-		pPlayerLeftResultObject->SetPos({ 15.0f, -10.0f, 5.0f });
-		pPlayerLeftResultObject->SetSize({ 10.0f, 8.0f, 1.0f });
-
-		// 左側の手札の勝敗判定
-		if (pPlayer->IsBurst(splitCards))
-		{
-			// プレイヤーの左側の手札の負け
-			pPlayerLeftResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
-		}
-		else if (pCroupier->IsBurst())
-		{
-			// プレイヤーの左側の手札の勝ち
-			pPlayerLeftResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
-		}
-		else if (pPlayer->IsBlackjack(splitCards) && !pCroupier->IsBlackjack())
-		{
-			// プレイヤーの左側の手札の勝ち
-			pPlayerLeftResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
-		}
-		else if (!pPlayer->IsBlackjack(splitCards) && pCroupier->IsBlackjack())
-		{
-			// プレイヤーの左側の手札の負け
-			pPlayerLeftResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
-		}
-		else if (pCroupier->CalcHandValue() > pPlayer->CalcHandValue(splitCards))
-		{
-			// プレイヤーの左側の手札の負け
-			pPlayerLeftResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
-		}
-		else if (pCroupier->CalcHandValue() < pPlayer->CalcHandValue(splitCards))
-		{
-			// プレイヤーの左側の手札の勝ち
-			pPlayerLeftResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
-		}
-		else
-		{
-			// 引き分け
-			pPlayerLeftResultObject->AddComponent<CBillboardRenderer>()->SetKey("Draw");
-		}
-		m_ResultObjectList.push_back(pPlayerLeftResultObject);
+		const DealerData& d = g_pNetwork->GetDealerData();
+		canShowResult = d.AllPlayersStand && d.DealerFinished;
 	}
-	// スプリットしていない場合の勝敗判定
 	else
 	{
-		// プレイヤーの手札の取得
-		auto playerCards = pPlayer->GetPlayerCards();
-
-		// 結果表示用オブジェクトの生成
-		CGameObject* pPlayerResultObject = pScene->AddGameObject<CGameObject>(Tag::GameObject, "PlayerResultObject");
-		pPlayerResultObject->SetPos({ -15.0f, -10.0f, 5.0f });
-		pPlayerResultObject->SetSize({ 10.0f, 8.0f, 1.0f });
-
-		// プレイヤーがバーストしている場合
-		if (pPlayer->IsBurst(playerCards))
-		{
-			// プレイヤーの負け
-			pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
-		}
-		// ディーラーがバーストしている場合
-		else if (pCroupier->IsBurst())
-		{
-			// プレイヤーの勝ち
-			pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
-		}
-		// プレイヤーがブラックジャックで、ディーラーがブラックジャックでない場合
-		else if (pPlayer->IsBlackjack(playerCards) && !pCroupier->IsBlackjack())
-		{
-			// プレイヤーの勝ち
-			pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
-		}
-		// ディーラーがブラックジャックで、プレイヤーがブラックジャックでない場合
-		else if (!pPlayer->IsBlackjack(playerCards) && pCroupier->IsBlackjack())
-		{
-			// プレイヤーの負け
-			pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
-		}
-		// ディーラーの手札の合計値 > プレイヤーの手札の合計値
-		else if (pCroupier->CalcHandValue() > pPlayer->CalcHandValue(playerCards))
-		{
-			// プレイヤーの負け
-			pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
-		}
-		// プレイヤーの手札の合計値 > ディーラーの手札の合計値
-		else if (pCroupier->CalcHandValue() < pPlayer->CalcHandValue(playerCards))
-		{
-			// プレイヤーの勝ち
-			pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
-		}
-		// 引き分けの場合
-		else
-		{
-			// 引き分け
-			pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Draw");
-		}
-		m_ResultObjectList.push_back(pPlayerResultObject);
+		// ローカル進行の場合: ディーラーが行動中でないことを待つ
+		bool bIsCroupierAction = pCroupier->IsActioning();
+		canShowResult = (m_bIsPlayerActionEnd && !bIsCroupierAction);
 	}
+
+	// ゲーム中に一回だけ勝敗判定を行う
+	if (!(m_ResultObjectList.empty() && canShowResult)) return;
+
+	// プレイヤーの手札の取得
+	auto playerCards = pPlayer->GetPlayerCards();
+
+	// 結果表示用オブジェクトの生成
+	CGameObject* pPlayerResultObject = pScene->AddGameObject<CGameObject>(Tag::GameObject, "PlayerResultObject");
+	pPlayerResultObject->SetPos({ -15.0f, -10.0f,5.0f });
+	pPlayerResultObject->SetSize({10.0f,8.0f,1.0f });
+
+	// プレイヤーがバーストしている場合
+	if (pPlayer->IsBurst(playerCards))
+	{
+		pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
+	}
+	else if (pCroupier->IsBurst())
+	{
+		pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
+	}
+	else if (pPlayer->IsBlackjack(playerCards) && !pCroupier->IsBlackjack())
+	{
+		pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
+	}
+	else if (!pPlayer->IsBlackjack(playerCards) && pCroupier->IsBlackjack())
+	{
+		pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
+	}
+	else if (pCroupier->CalcHandValue() > pPlayer->CalcHandValue(playerCards))
+	{
+		pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Lose");
+	}
+	else if (pCroupier->CalcHandValue() < pPlayer->CalcHandValue(playerCards))
+	{
+		pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Win");
+	}
+	else
+	{
+		pPlayerResultObject->AddComponent<CBillboardRenderer>()->SetKey("Draw");
+	}
+
+	m_ResultObjectList.push_back(pPlayerResultObject);
 }

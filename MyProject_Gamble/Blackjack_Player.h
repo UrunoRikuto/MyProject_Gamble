@@ -9,9 +9,6 @@
 
 constexpr DirectX::XMFLOAT3 ce_f3PlayerCardStartPos = DirectX::XMFLOAT3(-15.0f, -30.0f, 0.0f); // プレイヤーのカード開始位置
 
-constexpr DirectX::XMFLOAT3 ce_f3PlayerSpritCardStartPosLeft = DirectX::XMFLOAT3(20.0f, -30.0f, 0.0f); // プレイヤーのスプリットカード開始位置（左）
-constexpr DirectX::XMFLOAT3 ce_f3PlayerSpritCardStartPosRight = DirectX::XMFLOAT3(-50.0f, -30.0f, 0.0f); // プレイヤーのスプリットカード開始位置（右）
-
 // @brief ブラックジャックプレイヤークラス
 class CBlackjack_Player : public CGameObject
 {
@@ -39,13 +36,6 @@ public:
 	// @brief プレイヤーが行動可能かどうかを設定する
 	void SetCanAction(bool bCanAction) { m_bCanAction = bCanAction; }
 
-	// @brief スプリット用のカードリストを取得する
-	std::vector<CPlayingCard*>& GetSplitCards() { return m_SplitCards; }
-
-	// @brief スプリットを行ったかどうかを取得する
-	// @return true:スプリットしている false:スプリットしていない
-	bool IsCurrentSplitHand() { return !m_SplitCards.empty(); }
-
 	// @brief 持っているカードの合計値を計算する
 	int CalcHandValue(std::vector<CPlayingCard*> cardlist);
 
@@ -61,6 +51,9 @@ public:
 		return CalcHandValue(cardlist) == 21;
 	}
 
+	// @brief 手札をクリアする（カードオブジェクトも破棄）
+	void ClearHand();
+
 private:
 	// @brief 行動処理
 	void Action();
@@ -68,20 +61,11 @@ private:
 	// @brief カードの位置調整
 	void AdjustCardPositions();
 
-	// @brief スプリット用のカードリストを入れ替える
-	void ChangeCards();
-
 private:
 	// @brief プレイヤーが持っているカードリスト
 	std::vector<CPlayingCard*> m_Cards;
 
-	// @brief スプリット用のカードリスト
-	std::vector<CPlayingCard*> m_SplitCards;
-
 	// @brief プレイヤーが行動可能かどうか
 	bool m_bCanAction = true;
-
-	// @brief スプリットの片方の手札が終了しているかどうか
-	bool m_bIsSplitHandFinished = false;
 };
 

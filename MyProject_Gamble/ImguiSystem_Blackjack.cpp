@@ -64,59 +64,18 @@ void CImguiSystem::DrawPlayerUI_Blackjack(CScene* In_pScene)
 	// プレイヤーのポインタ取得
 	CBlackjack_Player* pPlayer = In_pScene->GetGameObject<CBlackjack_Player>();
 
-	if (pPlayer->IsCurrentSplitHand())
-	{
-		// メインカードの合計値
-		// ウィンドウの設定
-		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2.0f + 220, SCREEN_HEIGHT - 350));
-		ImGui::SetNextWindowSize(ImVec2(280, 180));
-		// フォントの設定
-		ImGui::PushFont(GetFont(ce_fInGameFontSize));
-		// ウィンドウの開始
-		ImGui::Begin("Player UI Main Hand", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
-		// カードの合計値表示
-		int nCardScore = pPlayer->CalcHandValue(pPlayer->GetPlayerCards());
-		ImGui::Text("%d", nCardScore);
-		ImGui::End();
-		// フォントの解除
-		ImGui::PopFont();
+	// ウィンドウの設定
+	ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - 350));
+	ImGui::SetNextWindowSize(ImVec2(280, 180));
 
-		// スプリットカードの合計値
-		// ウィンドウの設定
-		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2.0f - 220, SCREEN_HEIGHT - 350));
-		ImGui::SetNextWindowSize(ImVec2(280, 180));
-		// フォントの設定
-		ImGui::PushFont(GetFont(ce_fInGameFontSize));
-		// ウィンドウの開始
-		ImGui::Begin("Player UI Split Hand", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
-		// カードの合計値表示
-		int nSplitCardScore = pPlayer->CalcHandValue(pPlayer->GetSplitCards());
-		ImGui::Text("%d", nSplitCardScore);
-		ImGui::End();
-		// フォントの解除
-		ImGui::PopFont();
+	ImGui::PushFont(GetFont(ce_fInGameFontSize));
+	ImGui::Begin("Player UI", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
 
-	}
-	else
-	{
-		// ウィンドウの設定
-		ImGui::SetNextWindowPos(ImVec2(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT - 350));
-		ImGui::SetNextWindowSize(ImVec2(280, 180));
+	int nCardScore = pPlayer->CalcHandValue(pPlayer->GetPlayerCards());
+	ImGui::Text("%d", nCardScore);
 
-		// フォントの設定
-		ImGui::PushFont(GetFont(ce_fInGameFontSize));
-
-		// ウィンドウの開始
-		ImGui::Begin("Player UI", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar);
-
-		// カードの合計値表示
-		int nCardScore = pPlayer->CalcHandValue(pPlayer->GetPlayerCards());
-		ImGui::Text("%d", nCardScore);
-
-		ImGui::End();
-		// フォントの解除
-		ImGui::PopFont();
-	}
+	ImGui::End();
+	ImGui::PopFont();
 }
 
 /****************************************//*
@@ -132,7 +91,6 @@ void CImguiSystem::DrawControlUI_Blackjack()
 	ImGui::Text("[ Q ]Hit");
 	ImGui::Text("[ W ]Stand");
 	ImGui::Text("[ E ]Double Down");
-	ImGui::Text("[ R ]Split");
 
 	ImGui::End();
 	ImGui::PopFont();

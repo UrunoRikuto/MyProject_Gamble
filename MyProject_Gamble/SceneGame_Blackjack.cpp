@@ -55,25 +55,12 @@ void CSceneGame_Blackjack::Init()
 	CBlackjack_Player* pPlayer = AddGameObject<CBlackjack_Player>(Tag::GameObject, "BlackjackPlayer");
 	CBlackjack_Croupier* pCroupier = AddGameObject<CBlackjack_Croupier>(Tag::GameObject, "BlackjackCroupier");
 
-	// ブラックジャックゲームマネージャーの初期化
+	// ブラックジャックゲームマネージャーの初期化（ローカル配布はしない）
 	CBlackjack_GameManager* pGameManager = CBlackjack_GameManager::GetInstance();
 	pGameManager->Init();
 	pGameManager->StartGame(1);
 
-	// 最初のカードを配る
-	for (int i = 0; i < 2; ++i)
-	{
-		// プレイヤーにカードを配る
-		CPlayingCard::Info playerCardInfo = pGameManager->DealCard();
-		pPlayer->AddCard(playerCardInfo);
-		
-		// ディーラーにカードを配る
-		CPlayingCard::Info croupierCardInfo = pGameManager->DealCard();
-		pCroupier->AddCard(croupierCardInfo, i < 1);
-	}
-
-	pCroupier->FirstCheckBlackjack();
-
+	// 初期手札はNetwork側（Join確定後）で2枚要求する
 }
 
 /*****************************************//*
@@ -84,34 +71,22 @@ void CSceneGame_Blackjack::Update()
 	// 基底クラスの更新処理
 	CScene::Update();
 
-	// ブラックジャックゲームマネージャーの取得
 	CBlackjack_GameManager* pGameManager = CBlackjack_GameManager::GetInstance();
-
 
 	if (IsKeyTrigger(VK_DELETE))
 	{
 		// プレイヤーのカードをクリア
-		CBlackjack_Player* player = GetGameObject<CBlackjack_Player>();
-		player->Init();
-		
+		if (auto* player = GetGameObject<CBlackjack_Player>())
+			player->Init();
+
 		// ディーラーのカードをクリア
-		CBlackjack_Croupier* croupier = GetGameObject<CBlackjack_Croupier>();
-		croupier->Init();
+		if (auto* croupier = GetGameObject<CBlackjack_Croupier>())
+			croupier->Init();
 
 		pGameManager->Init();
 		pGameManager->StartGame(1);
 
-		// 最初のカードを配る
-		for (int i = 0; i < 2; ++i)
-		{
-			// プレイヤーにカードを配る
-			CPlayingCard::Info playerCardInfo = pGameManager->DealCard();
-			player->AddCard(playerCardInfo);
-			
-			// ディーラーにカードを配る
-			CPlayingCard::Info croupierCardInfo = pGameManager->DealCard();
-			croupier->AddCard(croupierCardInfo, i < 1);
-		}
+		// 初期配布はNetwork側に統一（ここでは管理しない）
 	}
 
 	// ブラックジャックゲームマネージャーの更新
@@ -119,6 +94,28 @@ void CSceneGame_Blackjack::Update()
 
 	// ネットワークの更新
 	g_pNetwork->Update();
+
+	// --- ラウンドリセット反映（初期手札を入れる前に必ずクリア） ---
+	if (g_pNetwork->ConsumeRoundReset())
+	{
+		if (auto* player = GetGameObject<CBlackjack_Player>())
+			player->ClearHand();
+	}
+
+	// Hit結果を反映（Network側が初期2枚含めて供給）
+	CPlayingCard::Info hitCard{};
+	while (g_pNetwork->ConsumeHitResult(hitCard))
+	{
+		if (auto* player = GetGameObject<CBlackjack_Player>())
+			player->AddCard(hitCard);
+	}
+
+	// ネットワーク受信したディーラー状態を反映
+	if (auto* croupier = GetGameObject<CBlackjack_Croupier>())
+	{
+		croupier->SetNetworkSync(true);
+		croupier->ApplyFromNetwork(*g_pNetwork);
+	}
 }
 
 /*****************************************//*

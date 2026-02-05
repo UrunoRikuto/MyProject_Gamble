@@ -7,6 +7,7 @@
 #include "Main.h"
 #include "Blackjack_GameManager.h"
 #include "Blackjack_Player.h"
+#include "Blackjack_Network.h"
 
 /*****************************************//*
 	@brief　	| コンストラクタ
@@ -22,6 +23,7 @@ CBlackjack_Croupier::CBlackjack_Croupier()
 *//*****************************************/
 CBlackjack_Croupier::~CBlackjack_Croupier()
 {
+	ClearCards();
 }
 
 /*****************************************//*
@@ -32,18 +34,10 @@ void CBlackjack_Croupier::Init()
 	// 基底クラスの初期化処理
 	CGameObject::Init();
 
-	// カードリストの初期化
-	for(auto card : m_Cards)
-	{
-		if (card)
-		{
-			card->Destroy();
-		}
-	}
-	m_Cards.clear();
+	ClearCards();
 
-	// 行動可能に設定
-	m_bCanAction = true;
+	//まだディーラーの手番ではないので「行動中ではない」
+	m_bCanAction = false;
 }
 
 /*****************************************//*
@@ -51,8 +45,11 @@ void CBlackjack_Croupier::Init()
 *//*****************************************/
 void CBlackjack_Croupier::Update()
 {
-	// 行動処理
-	Action();
+	if (!m_bNetworkSync)
+	{
+		// 従来のローカル進行
+		Action();
+	}
 
 	// カードの位置を設定
 	AdjustCardPositions();
@@ -68,28 +65,20 @@ void CBlackjack_Croupier::Update()
 void CBlackjack_Croupier::AddCard(CPlayingCard::Info tCardInfo, bool bFaceUp)
 {
 	// トランプカードオブジェクトの生成
-	// カード名
-	std::string cardName = "";
+	std::string cardName = "CroupierCard_";
 	switch (tCardInfo.m_eSuit)
 	{
-	case CPlayingCard::Suit::Spade:
-		cardName += "Spade_";
-		break;
-	case CPlayingCard::Suit::Club:
-		cardName += "Club_";
-		break;
-	case CPlayingCard::Suit::Heart:
-		cardName += "Heart_";
-		break;
-	case CPlayingCard::Suit::Diamond:
-		cardName += "Diamond_";
-		break;
+	case CPlayingCard::Suit::Spade: cardName += "Spade_"; break;
+	case CPlayingCard::Suit::Club: cardName += "Club_"; break;
+	case CPlayingCard::Suit::Heart: cardName += "Heart_"; break;
+	case CPlayingCard::Suit::Diamond: cardName += "Diamond_"; break;
 	}
 	cardName += std::to_string(tCardInfo.m_nNumber);
+	cardName += "_" + std::to_string(static_cast<int>(m_Cards.size()));
+
 	// カードオブジェクトをシーンに追加
-	CPlayingCard* pCard = GetScene()->AddGameObject<CPlayingCard>(Tag::GameObject, "cardName");
+	CPlayingCard* pCard = GetScene()->AddGameObject<CPlayingCard>(Tag::GameObject, cardName);
 	pCard->Setting(tCardInfo.m_eSuit, tCardInfo.m_nNumber, bFaceUp);
-	// カードリストに追加
 	m_Cards.push_back(pCard);
 }
 
@@ -118,6 +107,9 @@ void CBlackjack_Croupier::FirstCheckBlackjack()
 *//*****************************************/
 void CBlackjack_Croupier::Action()
 {
+	// ネットワーク同期中はローカルでカードを引かない
+	if (m_bNetworkSync) return;
+
 	// プレイヤーが行動終了しているか確認
 	if (!CBlackjack_GameManager::GetInstance()->IsPlayerActionEnd())
 	{
@@ -125,19 +117,29 @@ void CBlackjack_Croupier::Action()
 		return;
 	}
 
-	m_bCanAction = false; // 行動中フラグをfalseにする
+	// ディーラーの手番開始（行動中）
+	m_bCanAction = true;
 
-	m_Cards[1]->FaceUp(); // 2枚目のカードを表向きにする
+	if (m_Cards.size() >=2 && m_Cards[1])
+	{
+		m_Cards[1]->FaceUp(); //2枚目のカードを表向きにする
+	}
 
 	// 持っているカードの合計値を計算
 	int handValue = CalcHandValue();
 
 	// 合計値が17未満の場合、カードを引く
-	if (handValue < 17)
+	if (handValue <17)
 	{
-		// カードを1枚引く
+		//1フレームで複数枚引かないように、ここでは1枚だけ引いて手番を一旦終了する
+		// （次に引くかどうかは、マネージャ側が再度ディーラー手番にしたタイミングで判定する）
 		AddCard(CBlackjack_GameManager::GetInstance()->DealCard(), true);
+		m_bCanAction = false;
+		return;
 	}
+
+	//これ以上引かない＝行動終了
+	m_bCanAction = false;
 }
 
 /*****************************************//*
@@ -201,4 +203,79 @@ int CBlackjack_Croupier::CalcHandValue(bool UpFaceOnly)
 		aceCount--;
 	}
 	return totalValue;
+}
+
+void CBlackjack_Croupier::ClearCards()
+{
+	for (auto card : m_Cards)
+	{
+		if (card)
+		{
+			card->Destroy();
+		}
+	}
+	m_Cards.clear();
+}
+
+void CBlackjack_Croupier::ApplyFromNetwork(const CBlackjack_Network& net)
+{
+	const DealerData& d = net.GetDealerData();
+
+	// IsActiveでまだディーラー情報が来ていない/無効な場合は何もしない
+	if (!d.IsActive) return;
+
+	//変化がない場合は更新しない（無駄なDestroy/AddCardを避ける)
+	if (m_LastSyncedTableCards.size() == d.TableCards.size())
+	{
+		bool same = true;
+		for (size_t i =0; i < d.TableCards.size(); ++i)
+		{
+			const auto& a = m_LastSyncedTableCards[i];
+			const auto& b = d.TableCards[i];
+			if (a.m_eSuit != b.m_eSuit || a.m_nNumber != b.m_nNumber || a.m_bFaceUp != b.m_bFaceUp)
+			{
+				same = false;
+				break;
+			}
+		}
+		if (same) return;
+	}
+
+	// 手札が巻き戻った/リセットされた（数が減った）場合は作り直す
+	if (d.TableCards.size() < m_LastSyncedTableCards.size())
+	{
+		ClearCards();
+		for (const auto& info : d.TableCards)
+		{
+			AddCard(info, info.m_bFaceUp);
+		}
+		m_LastSyncedTableCards = d.TableCards;
+		m_bCanAction = false;
+		return;
+	}
+
+	//既存分のFaceUp更新（同一位置に同一カードが来る想定）
+	const size_t common = (std::min)(m_Cards.size(), d.TableCards.size());
+	for (size_t i =0; i < common; ++i)
+	{
+		CPlayingCard* pCard = m_Cards[i];
+		if (!pCard) continue;
+
+		const bool faceUpFromNet = d.TableCards[i].m_bFaceUp;
+		if (faceUpFromNet && !pCard->IsFaceUp())
+		{
+			pCard->FaceUp();
+		}
+		// FaceDownが必要になったらここに処理を追加（現状APIが無さそうなので省略）
+	}
+
+	// 増えた分だけAddCard
+	for (size_t i = m_Cards.size(); i < d.TableCards.size(); ++i)
+	{
+		const auto& info = d.TableCards[i];
+		AddCard(info, info.m_bFaceUp);
+	}
+
+	m_LastSyncedTableCards = d.TableCards;
+	m_bCanAction = false;
 }

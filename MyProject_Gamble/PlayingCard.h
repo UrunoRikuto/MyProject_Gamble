@@ -39,6 +39,7 @@ public:
 	{
 		Suit m_eSuit;	// カードのスート
 		int m_nNumber;				// カードの数字
+		bool m_bFaceUp = true; // 表向きかどうか（ネットワーク同期用）
 	};
 
 public:
