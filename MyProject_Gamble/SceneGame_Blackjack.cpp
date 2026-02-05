@@ -13,12 +13,17 @@
 #include "Blackjack_Croupier.h"
 #include "BackGroundObject.h"
 #include "Sprite3DRenderer.h"
+#include "Blackjack_Network.h"
+
+CBlackjack_Network* g_pNetwork;
 
 /*****************************************//*
 	@brief　	| コンストラクタ
 *//*****************************************/
 CSceneGame_Blackjack::CSceneGame_Blackjack()
 {
+	g_pNetwork = new CBlackjack_Network();
+	g_pNetwork->Init();
 }
 
 /*****************************************//*
@@ -26,6 +31,9 @@ CSceneGame_Blackjack::CSceneGame_Blackjack()
 *//*****************************************/
 CSceneGame_Blackjack::~CSceneGame_Blackjack()
 {
+	g_pNetwork->Uninit();
+	delete g_pNetwork;
+	g_pNetwork = nullptr;
 }
 
 /*****************************************//*
@@ -108,6 +116,9 @@ void CSceneGame_Blackjack::Update()
 
 	// ブラックジャックゲームマネージャーの更新
 	pGameManager->Update();
+
+	// ネットワークの更新
+	g_pNetwork->Update();
 }
 
 /*****************************************//*

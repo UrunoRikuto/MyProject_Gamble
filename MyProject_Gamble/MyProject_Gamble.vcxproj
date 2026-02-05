@@ -136,6 +136,7 @@
     <ClInclude Include="BillboardRenderer.h" />
     <ClInclude Include="Blackjack_Croupier.h" />
     <ClInclude Include="Blackjack_GameManager.h" />
+    <ClInclude Include="Blackjack_Network.h" />
     <ClInclude Include="Blackjack_Player.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraDebug.h" />
@@ -145,6 +146,7 @@
     <ClInclude Include="CollisionObb.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ImguiSystem.h" />
+    <ClInclude Include="json.hpp" />
     <ClInclude Include="PlayingCard.h" />
     <ClInclude Include="SceneGame_Blackjack.h" />
     <ClInclude Include="ShaderManager.h" />
@@ -186,6 +188,7 @@
     <ClCompile Include="BillboardRenderer.cpp" />
     <ClCompile Include="Blackjack_Croupier.cpp" />
     <ClCompile Include="Blackjack_GameManager.cpp" />
+    <ClCompile Include="Blackjack_Network.cpp" />
     <ClCompile Include="Blackjack_Player.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CameraDebug.cpp" />

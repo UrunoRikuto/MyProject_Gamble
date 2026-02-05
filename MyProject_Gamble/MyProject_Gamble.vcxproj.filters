@@ -94,6 +94,9 @@
     <Filter Include="ブラックジャック\UI">
       <UniqueIdentifier>{a717374c-7506-4c50-a24f-3fabe42d91a6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ブラックジャック\Network">
+      <UniqueIdentifier>{e5a464aa-1d8b-4fdb-80fb-63e8698aef2e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Main.h">
@@ -240,6 +243,10 @@
     <ClInclude Include="CameraGame_Blackjack.h">
       <Filter>ブラックジャック\Camera</Filter>
     </ClInclude>
+    <ClInclude Include="json.hpp" />
+    <ClInclude Include="Blackjack_Network.h">
+      <Filter>ブラックジャック\Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -382,6 +389,9 @@
     </ClCompile>
     <ClCompile Include="ImguiSystem_Blackjack.cpp">
       <Filter>ブラックジャック\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Blackjack_Network.cpp">
+      <Filter>ブラックジャック\Network</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

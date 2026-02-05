@@ -17,6 +17,22 @@ public:
 		Heart,	// ハート
 		Diamond,// ダイヤ
 	};
+	std::string GetStringSuit() const
+	{
+		switch (m_tCardInfo.m_eSuit)
+		{
+		case Suit::Spade:
+			return "Spade";
+		case Suit::Club:
+			return "Club";
+		case Suit::Heart:
+			return "Heart";
+		case Suit::Diamond:
+			return "Diamond";
+		default:
+			return "Unknown";
+		}
+	}
 
 	// @brief トランプのカード情報構造体
 	struct Info
@@ -45,15 +61,15 @@ public:
 	void Setting(Suit eSuit, int nNumber, bool bFaceUp = true);
 	
 	// @brief カードのスート取得
-	Suit GetSuit() { return m_tCardInfo.m_eSuit; }
+	Suit GetSuit() const { return m_tCardInfo.m_eSuit; }
 
 	// @brief カードの数字取得
-	int GetNumber() { return m_tCardInfo.m_nNumber; }
+	int GetNumber() const { return m_tCardInfo.m_nNumber; }
 
 	// @brief カードの向きを表にする
 	void FaceUp();
 	// @brief カードの向きが表かどうか取得
-	bool IsFaceUp() { return m_bIsFaceUp; }
+	bool IsFaceUp() const { return m_bIsFaceUp; }
 
 private:
 	bool m_bIsFaceUp = true; // カードが表向きかどうか
